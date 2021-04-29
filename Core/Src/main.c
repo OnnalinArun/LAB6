@@ -55,6 +55,7 @@ uint8_t ADCUpdateFlag = 0;
 uint16_t ADCFeedBack = 0;
 
 uint16_t PWMOut = 3000;
+float Vout = 0;
 
 uint64_t _micro = 0; // save micro time
 uint64_t TimeOutputLoop = 0;
@@ -137,7 +138,15 @@ int main(void)
 			// #001
 
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, PWMOut); //คำสั่งคล้ายฟังก์ชัน แต่จะเร็วกว่า สั่งให้เซ็ต compare timer1
-
+			Vout = PWMOut * 3.3 * ADCFeedBack/(4096*htim1.Init.Period);
+			if (Vout < 1)
+			{
+				PWMOut = (4096*htim1.Init.Period)/(ADCFeedBack * 3.3);
+			}
+			else if (Vout > 1)
+			{
+				PWMOut = (4096*htim1.Init.Period)/(ADCFeedBack * 3.3);
+			}
 		}
 
 		if (ADCUpdateFlag)
